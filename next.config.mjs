@@ -2,11 +2,11 @@
 const nextConfig = {
     output: 'standalone',
     distDir: 'dist',
-    redirects: async () => {
+    rewrites: async () => {
         return [
             {
-                source: '/_next/*',
-                destination: '/dist/*'
+                source: '/_next/:path*',
+                destination: '/dist/:path*',
             }
         ]
     }
