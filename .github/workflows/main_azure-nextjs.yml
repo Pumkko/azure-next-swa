@@ -66,5 +66,5 @@ jobs:
         with:
           app-name: 'azure-next-as'
           slot-name: 'Production'
-          package: ./.next
+          package: .
           
