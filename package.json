@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "^20.11.0"
+  },
   "name": "azure-next-swa",
   "version": "0.1.0",
   "private": true,
