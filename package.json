@@ -1,6 +1,6 @@
 {
   "engines": {
-    "node": "^20.11.0"
+    "node": "^20.9.0"
   },
   "name": "azure-next-swa",
   "version": "0.1.0",
