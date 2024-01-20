@@ -30,6 +30,7 @@ export default async function Home() {
   return (
 
     <main>
+      {process.env.NEXT_PUBLIC_MY_ENV}
       <h1>Characters</h1>
       {
         characters.map(c => <p key={c.id}>{c.name}</p>)
