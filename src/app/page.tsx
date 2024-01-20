@@ -10,8 +10,11 @@ const rickAndMortyCharacterSchema = v.object({
 })
 
 async function getCharacters() {
+  if(!process.env.RICK_AND_MORTY_API_ENDPOINT){
+    throw new Error("Failed to read env RICK_AND_MORTY_API_ENDPOINT, will parse env file with valibot later");
+  }
 
-  const charactersResponse = await fetch('https://rickandmortyapi.com/api/character');
+  const charactersResponse = await fetch(process.env.RICK_AND_MORTY_API_ENDPOINT);
   const characters = await charactersResponse.json();
 
   const characterParsed = v.safeParse(rickAndMortyCharacterSchema, characters);
@@ -30,7 +33,6 @@ export default async function Home() {
   return (
 
     <main>
-      {process.env.NEXT_PUBLIC_MY_ENV}
       <h1>Characters</h1>
       {
         characters.map(c => <p key={c.id}>{c.name}</p>)

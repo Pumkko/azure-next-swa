@@ -27,6 +27,9 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
+# This will do the trick, use the corresponding env file for each environment.
+COPY .env.sample.production .env.production
+
 RUN npm run build
 
 # Production image, copy all the files and run next

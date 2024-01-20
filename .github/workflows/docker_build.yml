@@ -12,6 +12,12 @@ jobs:
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@main
 
+        - uses: cschleiden/replace-tokens@v1
+          with:
+            files: '.env.sample.production'
+          env:
+            RICK_AND_MORTY_API_ENDPOINT: ${{ secrets.RICK_AND_MORTY_API_ENDPOINT }}
+
         # Log into Azure
         - uses: azure/login@v1
           with:
