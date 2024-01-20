@@ -1,6 +1,9 @@
 on: [push]
 name: Docker_Build
-
+permissions:
+  id-token: write
+  contents: read
+  
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
