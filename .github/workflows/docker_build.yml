@@ -7,6 +7,32 @@ permissions:
 env: 
   APP_DOCKER_IMAGE_NAME: learn-nextjs-docker-app
 jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        environment: production
+        needs: deploy-azure-resources
+        steps:
+        # checkout the repo
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@main
+
+        - uses: cschleiden/replace-tokens@v1
+          with:
+            files: '.env.sample.production'
+          env:
+            AZURE_APP_CONFIGURATION_CONNECTION_STRING: ${{ secrets.AZURE_APP_CONFIGURATION_CONNECTION_STRING }}
+
+        - name: 'Build and push image'
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+            username: ${{ secrets.REGISTRY_USERNAME }}
+            password: ${{ secrets.REGISTRY_PASSWORD }}
+
+        - run: |
+            docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.APP_DOCKER_IMAGE_NAME }}:${{ github.sha }}
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.APP_DOCKER_IMAGE_NAME }}:${{ github.sha }}
+
     deploy-azure-resources: 
       runs-on: ubuntu-latest
       environment: production
@@ -33,30 +59,3 @@ jobs:
               dockerRegistryServerUrl=${{ secrets.REGISTRY_LOGIN_SERVER }}
               learnNextJsAppImageName=${{ env.APP_DOCKER_IMAGE_NAME }}
               learnNextJsAppImageTag=${{ github.sha }}
-
-
-    build-and-deploy:
-        runs-on: ubuntu-latest
-        environment: production
-        needs: deploy-azure-resources
-        steps:
-        # checkout the repo
-        - name: 'Checkout GitHub Action'
-          uses: actions/checkout@main
-
-        - uses: cschleiden/replace-tokens@v1
-          with:
-            files: '.env.sample.production'
-          env:
-            AZURE_APP_CONFIGURATION_CONNECTION_STRING: ${{ secrets.AZURE_APP_CONFIGURATION_CONNECTION_STRING }}
-
-        - name: 'Build and push image'
-          uses: azure/docker-login@v1
-          with:
-            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-            username: ${{ secrets.REGISTRY_USERNAME }}
-            password: ${{ secrets.REGISTRY_PASSWORD }}
-
-        - run: |
-            docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.APP_DOCKER_IMAGE_NAME }}:${{ github.sha }}
-            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.APP_DOCKER_IMAGE_NAME }}:${{ github.sha }}
