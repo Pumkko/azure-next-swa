@@ -1,4 +1,4 @@
-import { AppConfigurationClient } from '@azure/app-configuration';
+import { AppConf } from '@/env';
 import * as v from 'valibot'
 
 const rickAndMortyCharacterSchema = v.object({
@@ -11,21 +11,7 @@ const rickAndMortyCharacterSchema = v.object({
 })
 
 async function getCharacters() {
-  if(!process.env.AZURE_APP_CONFIGURATION_CONNECTION_STRING){
-    throw new Error("Failed to read env AZURE_APP_CONFIGURATION_CONNECTION_STRING, will parse env file with valibot later");
-  }
-
-  const client = new AppConfigurationClient(process.env.AZURE_APP_CONFIGURATION_CONNECTION_STRING);
-
-  const setting = await client.getConfigurationSetting({
-    key: "rick-and-morty-api-endpoint"
-  });
-
-  if(!setting.value){
-    throw new Error("Failed to fetch rick and morty endpoint conf, check azure conf");
-  }
-
-  const charactersResponse = await fetch(setting.value);
+  const charactersResponse = await fetch(AppConf.RICK_AND_MORTY_API_ENDPOINT);
   const characters = await charactersResponse.json();
   const characterParsed = v.safeParse(rickAndMortyCharacterSchema, characters);
 
@@ -37,13 +23,11 @@ async function getCharacters() {
 }
 
 export default async function Home() {
-
   const characters = await getCharacters();
-
   return (
 
     <main>
-      <h1>Characters</h1>
+      <h1>Characters with validation</h1>
       {
         characters.map(c => <p key={c.id}>{c.name}</p>)
       }
