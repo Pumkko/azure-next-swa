@@ -12,12 +12,15 @@ param learnNextJsAppImageTag string
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   name: 'learn-nextjs-app-service-plan'
+  kind: 'Linux'
   location: location
   sku: {
     name: 'F1'
     tier: 'Free'
   }
-  kind: 'Linux'
+  properties: {
+    reserved: true
+  }
 }
 
 resource appService 'Microsoft.Web/sites@2023-01-01' = {
@@ -25,14 +28,11 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
   location: location
   properties: {
     serverFarmId: appServicePlan.id
-    clientAffinityEnabled: false
-    httpsOnly: true
-    publicNetworkAccess: 'Enabled'
     siteConfig: {
       appSettings: [
         {
           name: 'DOCKER_REGISTRY_SERVER_URL'
-          value: dockerRegistryServerUrl
+          value: 'https://${dockerRegistryServerUrl}'
         }
         {
           name: 'DOCKER_REGISTRY_SERVER_USERNAME'
@@ -48,8 +48,6 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
         }
       ]
       linuxFxVersion: 'DOCKER|${dockerRegistryServerUrl}/${learnNextJsAppImageName}:${learnNextJsAppImageTag}'
-      alwaysOn: false
-      ftpsState: 'FtpsOnly'
     }
   }
 
