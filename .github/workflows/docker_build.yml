@@ -7,10 +7,9 @@ permissions:
 env: 
   APP_DOCKER_IMAGE_NAME: learn-nextjs-docker-app
 jobs:
-    build-and-deploy:
+    build-and-deploy-docker-image:
         runs-on: ubuntu-latest
         environment: production
-        needs: deploy-azure-resources
         steps:
         # checkout the repo
         - name: 'Checkout GitHub Action'
@@ -36,6 +35,7 @@ jobs:
     deploy-azure-resources: 
       runs-on: ubuntu-latest
       environment: production
+      needs: build-and-deploy-docker-image
       steps: 
         - name: 'Checkout Code'
           uses: actions/checkout@main
